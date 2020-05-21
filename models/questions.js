@@ -31,10 +31,14 @@ const questionSchema = new Schema({
         required:true
     
             },
-            cAnswer:{
-                type:String,
-                 required:true
-                  },        
+     cAnswer:{
+        type:String,
+        required:true
+            },   
+     user:{
+         type:String,
+         required:true
+     } ,           
                         
                          
   date:{

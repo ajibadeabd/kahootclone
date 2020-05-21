@@ -3,6 +3,8 @@ var express = require('express');
 var indexRouter = require('./routes/index');
 var path = require('path');
 const cors = require('cors')
+const passport = require('passport')
+
 // var cookieParser = require('cookie-parser');
 // var bodyParser = require('body-parser');
 var logger = require('morgan');
@@ -32,7 +34,8 @@ app.use(cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
+app.use(passport.initialize())
+require("./config/passport")(passport)
 app.use('/',indexRouter)
 
 app.listen(port,()=>{
