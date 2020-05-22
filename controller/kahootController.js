@@ -18,32 +18,35 @@ exports.saveKahootQuestion = (req,res,next)=>{
         Title,
     } = req.body
     console.log(question)
-            // Kahoot.findById(req.params.id)
-            // .then(found=>{
-            //     if(!found) {
-            //         return res.status(404).json({
-            //             success:false,
-            //             msg:'specify the title for the kahoot quiz'
-            //         })
-            //     }else{
-                    let newQuestion =new  Question({
-                        qTitle:Title,
-                        qQuestion:question,
-                        option1:Answer1,
-                        option2:Answer2,
-                        option3:Answer3,
-                        option4:Answer4,
-                        cAnswer:correctAnswer,
-                        user:req.user._id,
-                    })
-                   newQuestion.save()
-                   console.log(newQuestion)
-                    return res.json({
-                        msg:`question was created`,
-                        success:true,
-                    })
-            //     }
-            // })
+            
+                Question.findOne({qQuestion:question})
+                .then(found=>{
+                    if (found) {
+                        return res.status(404).json({
+                                        success:false,
+                                        msg:'this question has been created before'
+                                    })
+                    }else{
+                        let newQuestion =new  Question({
+                            qTitle:Title,
+                            qQuestion:question,
+                            option1:Answer1,
+                            option2:Answer2,
+                            option3:Answer3,
+                            option4:Answer4,
+                            cAnswer:correctAnswer,
+                            user:req.user._id,
+                        })
+                       newQuestion.save()
+                       console.log(newQuestion)
+                        return res.status(201).json({
+                            msg:`question was created`,
+                            success:true,
+                        })
+                    }
+                })
+                   
+           
     };
 
 // getEachTitle
@@ -119,3 +122,67 @@ exports.saveKahootTitle=(req,res,next)=>{
                 })
             })
                 }
+//join kahoot
+ exports.joinKahoot = (req,res,next)=>{
+                    let {name,pin} =req.body
+                     if(!name){
+                         return res.status(400).json({
+                             success:false,
+                             message:'please provide a name'
+                         })
+                     } 
+                     if(!pin){
+                         return res.status(400).json({
+                             success:false,
+                             message:'please provide a code to join'
+                         })
+                     }else{
+                         Question.findOne({pin:pin})
+                         .then(pin=>{
+                             if(!pin){
+                                 return res.status(400).json({
+                                     success:false,
+                                     message:'invalid pin'
+                                 })
+                             }else{
+                                 //  code to join kahoot
+                                 console.log('proceed to ..')
+                             }
+                         })
+                     }
+                 
+                 }
+exports.displayAllKahoot= (req,res,next)=>{
+    Kahoot.find()
+    .then(kahoot=>{
+        console.log(kahoot)
+        return res.status(201).json({
+            success:true,
+            msg:'these are the kahoot questions',
+            kahoot:kahoot
+        })
+    }).catch(err=>{
+        res.status(400).json({
+            success:'',
+            msg:'i still dea think am'
+        })
+    })
+}
+
+exports.allQuestionId = (req,res,next)=>{
+    Question.find({qTitle:req.params.id,
+                    user:req.user._id})
+    .then(question=>{
+        console.log(question)
+        return res.status(201).json({
+            success:true,
+            msg:'these are the kahoot questions',
+            question:question
+        })
+    }).catch(err=>{
+        res.status(400).json({
+            success:'',
+            msg:'i still dea think am'
+        })
+    })
+} 
