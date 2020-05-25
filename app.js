@@ -23,7 +23,7 @@ mongoose.connect( 'mongodb+srv://user:user@cluster0-p7r06.mongodb.net/test?retry
 .catch((err) => console.log(err));
 
 
-let port = 2000
+let port = process.env.PORT || 2000
 
 
 
