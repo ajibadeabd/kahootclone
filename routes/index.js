@@ -5,8 +5,10 @@ const Question = require('../models/questions')
 const Kahoot = require('../models/Kahoot')
 const User = require('../models/user')
 const {register,login} = require('../controller/userController')
-const {saveKahootQuestion,getEachTitle,saveKahootTitle,deleteEachKahoot,joinKahoot,displayAllKahoot
-    ,getallkahootbuythehost,editEachKahoot,allQuestionId} = require('../controller/kahootController')
+const {saveKahootQuestion,getEachTitle,saveKahootTitle,deleteEachKahoot,joinKahoot,displayAllKahoot,
+    displayJoinedUserPage
+    ,getallkahootbuythehost,editEachKahoot,allQuestionId,displayplayersForEachKahoot,userQuestion} 
+    = require('../controller/kahootController')
 
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose');
@@ -65,5 +67,14 @@ router.get('/displayAllKahoot', passport.authenticate('jwt',{
 router.get('/allQuestionId/:id', passport.authenticate('jwt',{
         session:false
         }),allQuestionId)
-        
+        // displayplayersForEachKahoot
+router.get('/displayplayersForEachKahoot/:id/:title', passport.authenticate('jwt',{
+        session:false
+        }),displayplayersForEachKahoot)
+        // userQuestion
+
+router.get('/userQuestion/:code', passport.authenticate('jwt',{
+        session:false
+        }),userQuestion)
+ router.get('/displayJoinedUserPage/:id',displayJoinedUserPage)                   
 module.exports = router;

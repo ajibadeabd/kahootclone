@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const kahootSchema = new Schema({
-    KahootTitle:{
+const joinedSchema = new Schema({
+    name:{
         type:String,
         required:true
 
@@ -14,7 +14,12 @@ const kahootSchema = new Schema({
     },
     code:{
         type:String,
-        // required:true
+        required:true
+
+    },
+    Title:{
+        type:String,
+        required:true
 
     },
   date:{
@@ -23,4 +28,4 @@ const kahootSchema = new Schema({
   }
 });
 
-module.exports = mongoose.model('kahoot', kahootSchema);
+module.exports = mongoose.model('joined', joinedSchema);

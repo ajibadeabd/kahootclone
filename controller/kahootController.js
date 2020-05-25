@@ -2,24 +2,15 @@ const mongoose =require('mongoose')
 const Question =require('../models/questions')
 const Kahoot =require('../models/Kahoot')
 const User =require('../models/user')
+const Joined =require('../models/joined')
 
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs');
 const passport = require('passport')
 
 exports.saveKahootQuestion = (req,res,next)=>{
-    let {
-        Answer1,
-        Answer2,
-        Answer3,
-        Answer4,
-        question,
-        correctAnswer,
-        Title,
-    } = req.body
-    console.log(question)
-            
-                Question.findOne({qQuestion:question})
+    let {Answer1,Answer2,Answer3,Answer4,question,correctAnswer,Title} = req.body
+                Question.findOne({qQuestion:question,user:req.user._id})
                 .then(found=>{
                     if (found) {
                         return res.status(404).json({
@@ -54,7 +45,6 @@ exports.getEachTitle= (req,res,next)=>{
     console.log(req.params.id)
     Kahoot.findById(req.params.id)
     .then(Title=>{
-        console.log(Title)
         return res.status(200).json({
             success:true,
             Title:Title
@@ -66,8 +56,6 @@ exports.getEachTitle= (req,res,next)=>{
 // getEachTitle
 exports.saveKahootTitle=(req,res,next)=>{
     let {Title}=req.body
-    console.log('con')
-    
     let newKahoot = new Kahoot({
         KahootTitle:Title,
         user:req.user._id
@@ -124,39 +112,95 @@ exports.saveKahootTitle=(req,res,next)=>{
                 }
 //join kahoot
  exports.joinKahoot = (req,res,next)=>{
-                    let {name,pin} =req.body
+                    let {name,code} =req.body
+                    console.log(req.body)
                      if(!name){
                          return res.status(400).json({
                              success:false,
                              message:'please provide a name'
                          })
                      } 
-                     if(!pin){
+                     if(!code){
                          return res.status(400).json({
                              success:false,
                              message:'please provide a code to join'
                          })
                      }else{
-                         Question.findOne({pin:pin})
-                         .then(pin=>{
-                             if(!pin){
+                         Kahoot.findOne({code:code})
+                         .then(code=>{
+                             if(!code){
                                  return res.status(400).json({
                                      success:false,
-                                     message:'invalid pin'
+                                     msg:'invalid code'
                                  })
-                             }else{
-                                 //  code to join kahoot
-                                 console.log('proceed to ..')
+                             }
+                             
+                             
+                             
+                             else{
+
+                                Joined.findOne({
+                                    name:name,
+                                    code:req.body.code,
+                                    Title:code.KahootTitle,
+                                    user:code.user
+                                })
+                                .then(name=>{
+                                    if (name) {
+                                        return res.status(400).json({
+                                            success:false,
+                                            msg:'name already in use'
+                                        }) 
+                                    }else{
+                                        let joinUser = new Joined({
+                                            name:req.body.name,
+                                            code:req.body.code,
+                                            user:code.user,
+                                            Title:code.KahootTitle,
+                                        })
+                                        joinUser.save()
+                                        .then(user=>{
+                                            console.log(user)
+                                            return res.status(201).json({
+                                                success:true,
+                                                msg:`${user.name} joined` ,
+                                                user:user
+                                            })
+                                        })
+                                        .catch(err=>{
+                                            console.log(err)
+                                        })
+                                    }
+                                })
+                                 
                              }
                          })
                      }
                  
                  }
+
+exports.displayplayersForEachKahoot= (req,res,next)=>{
+    console.log(req.params.title)
+    Joined.find({
+        code:req.params.id,
+        Title:req.params.title,
+        user:req.user._id
+    })
+    .then(kahoot=>{
+        console.log(kahoot)
+        return res.status(200).json({
+            success:true,
+            user:kahoot
+        })
+    })
+}
+
+
 exports.displayAllKahoot= (req,res,next)=>{
     Kahoot.find()
     .then(kahoot=>{
         console.log(kahoot)
-        return res.status(201).json({
+        return res.status(200).json({
             success:true,
             msg:'these are the kahoot questions',
             kahoot:kahoot
@@ -169,6 +213,7 @@ exports.displayAllKahoot= (req,res,next)=>{
     })
 }
 
+
 exports.allQuestionId = (req,res,next)=>{
     Question.find({qTitle:req.params.id,
                     user:req.user._id})
@@ -176,7 +221,7 @@ exports.allQuestionId = (req,res,next)=>{
         console.log(question)
         return res.status(201).json({
             success:true,
-            msg:'these are the kahoot questions',
+            msg:'these are the questions',
             question:question
         })
     }).catch(err=>{
@@ -186,3 +231,38 @@ exports.allQuestionId = (req,res,next)=>{
         })
     })
 } 
+
+// exports.displayEachKahootQuestionHost 
+
+
+exports.userQuestion = (req,res,next)=> {
+    console.log(req.params.code)
+    Question.find({code:req.params.code})
+    .then(question=>{
+        console.log(question)
+        return res.status(201).json({
+            success:true,
+            msg:'these are the questions',
+            question:question
+        })
+    }).catch(err=>{
+        res.status(400).json({
+            success:'',
+            msg:'y u change the route you think say you wise abi'
+        })
+    })
+
+}
+exports.displayJoinedUserPage=(req,res,next)=>{
+    console.log(req.params.id)
+    Joined.findById(req.params.id)
+    .then(user=>{
+        return res.status(200).json({
+            success:true,
+            msg:`${user.name} has truely joined`,
+            user:user
+        })
+    }).catch(err=>{
+    })
+}
+// displayJoinedUserPage
