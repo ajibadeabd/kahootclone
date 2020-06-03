@@ -89,7 +89,10 @@ exports.saveKahootTitle=(req,res,next)=>{
         console.log(kahoot)
         Question.deleteMany({qTitle:req.body.Title})
         .then(gone=>{
-            console.log(gone)
+            res.status(201).json({
+                success:true,
+                msg:`${req.body.Title} was deleted`
+        })
     })
     })
         }

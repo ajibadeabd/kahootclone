@@ -28,6 +28,7 @@ exports.register =  function(req, res, next) {
       }).then((user)=>{
         if(user) {
         return res.status(400).json({
+          success:false,
             msg:"Username already taken" 
         })
         }else{
@@ -37,6 +38,7 @@ exports.register =  function(req, res, next) {
         .then((user)=>{
           if(user) {
            return res.status(400).json({
+             success:false,
               msg:"email  already been registerd. did you forget your password" 
           })
           
