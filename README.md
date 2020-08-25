@@ -1,4 +1,4 @@
-# AutoMart-api
+# kahoot-clone server side
 
 
 ### Installation
