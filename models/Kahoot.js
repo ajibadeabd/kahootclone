@@ -7,14 +7,14 @@ const kahootSchema = new Schema({
         required:true
 
     },
-    user:{
-        type:String,
-        required:true
-
-    },
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: 'user',
+        required: true,
+      },
     code:{
         type:String,
-        // required:true
+        required:true
 
     },
   date:{

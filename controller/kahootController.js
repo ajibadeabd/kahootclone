@@ -42,7 +42,6 @@ exports.saveKahootQuestion = (req,res,next)=>{
 
 // getEachTitle
 exports.getEachTitle= (req,res,next)=>{
-    console.log(req.params.id)
     Kahoot.findById(req.params.id)
     .then(Title=>{
         return res.status(200).json({
@@ -56,8 +55,19 @@ exports.getEachTitle= (req,res,next)=>{
 // getEachTitle
 exports.saveKahootTitle=(req,res,next)=>{
     let {Title}=req.body
+    let  makeid= (length)=> {
+        var result = '';
+        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for (var i = 0; i < length; i++) {
+          result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+      }
+     let code = makeid(7)
     let newKahoot = new Kahoot({
         KahootTitle:Title,
+        code:code,
         user:req.user._id
         })
         newKahoot.save()
@@ -115,34 +125,21 @@ exports.saveKahootTitle=(req,res,next)=>{
                 }
 //join kahoot
  exports.joinKahoot = (req,res,next)=>{
-                    let {name,code} =req.body
-                    console.log(req.body)
-                     if(!name){
-                         return res.status(400).json({
+                    let {code,name} =req.body
+                    // let name =req.user.userName
+                    console.log(req.user._id)
+                     if(!name){ return res.status(400).json({
                              success:false,
-                             message:'please provide a name'
-                         })
-                     } 
-                     if(!code){
-                         return res.status(400).json({
+                             message:'please provide a name' })} 
+                     if(!code){ return res.status(400).json({
                              success:false,
-                             message:'please provide a code to join'
-                         })
+                             message:'please provide a code to join' })
                      }else{
                          Kahoot.findOne({code:code})
-                         .then(code=>{
-                             if(!code){
-                                 return res.status(400).json({
+                         .then(code=>{if(!code){ return res.status(400).json({
                                      success:false,
-                                     msg:'invalid code'
-                                 })
-                             }
-                             
-                             
-                             
-                             else{
-
-                                Joined.findOne({
+                                     msg:'invalid code'})}
+                             else{Joined.findOne({
                                     name:name,
                                     code:req.body.code,
                                     Title:code.KahootTitle,
@@ -152,7 +149,7 @@ exports.saveKahootTitle=(req,res,next)=>{
                                     if (name) {
                                         return res.status(400).json({
                                             success:false,
-                                            msg:'name already in use'
+                                            msg:'user already joined the game'
                                         }) 
                                     }else{
                                         let joinUser = new Joined({

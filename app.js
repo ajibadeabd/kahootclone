@@ -13,9 +13,9 @@ const mongoose = require('mongoose');
 let app= express()
 //map global promise - get rid of warning
 mongoose.promise=global.promise;
-// mongoose.connect( 'mongodb://localhost/kahoot',
+mongoose.connect( 'mongodb://localhost/kahoot',
   
-mongoose.connect( 'mongodb+srv://user:user@cluster0-p7r06.mongodb.net/test?retryWrites=true&w=majority',
+// mongoose.connect( 'mongodb+srv://user:user@cluster0-p7r06.mongodb.net/test?retryWrites=true&w=majority',
 {useNewUrlParser:true,
   useUnifiedTopology: true 
 })
