@@ -29,7 +29,9 @@ router.post('/register',register);
 router.post('/login', login);
 
 // join kahoot
-router.post('/joinKahoot',joinKahoot)
+router.post('/joinKahoot', passport.authenticate('jwt',{
+    session:false
+    }),joinKahoot)
 
 // save kahoot title 
 router.post('/saveKahootTitle', passport.authenticate('jwt',{
@@ -76,5 +78,8 @@ router.get('/displayplayersForEachKahoot/:id/:title', passport.authenticate('jwt
 router.get('/userQuestion/:code', passport.authenticate('jwt',{
         session:false
         }),userQuestion)
- router.get('/displayJoinedUserPage/:id',displayJoinedUserPage)                   
+ router.get('/displayJoinedUserPage/:id',
+ passport.authenticate('jwt',{
+    session:false
+    }),displayJoinedUserPage)                   
 module.exports = router;

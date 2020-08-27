@@ -8,6 +8,9 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs');
 const passport = require('passport')
 
+
+
+
 exports.saveKahootQuestion = (req,res,next)=>{
     let {Answer1,Answer2,Answer3,Answer4,question,correctAnswer,Title} = req.body
                 Question.findOne({qQuestion:question,user:req.user._id})
@@ -125,9 +128,8 @@ exports.saveKahootTitle=(req,res,next)=>{
                 }
 //join kahoot
  exports.joinKahoot = (req,res,next)=>{
-                    let {code,name} =req.body
-                    // let name =req.user.userName
-                    console.log(req.user._id)
+                    let {code,title} =req.body
+                    let name =req.user.userName
                      if(!name){ return res.status(400).json({
                              success:false,
                              message:'please provide a name' })} 
@@ -135,12 +137,12 @@ exports.saveKahootTitle=(req,res,next)=>{
                              success:false,
                              message:'please provide a code to join' })
                      }else{
-                         Kahoot.findOne({code:code})
+                         Kahoot.findOne({code:code,KahootTitle:title})
                          .then(code=>{if(!code){ return res.status(400).json({
                                      success:false,
-                                     msg:'invalid code'})}
+                                     msg:'No game with this id'})}
                              else{Joined.findOne({
-                                    name:name,
+                                    name:req.user.userName,
                                     code:req.body.code,
                                     Title:code.KahootTitle,
                                     user:code.user
@@ -149,18 +151,19 @@ exports.saveKahootTitle=(req,res,next)=>{
                                     if (name) {
                                         return res.status(400).json({
                                             success:false,
-                                            msg:'user already joined the game'
+                                            msg:`user already joined` ,
+
                                         }) 
                                     }else{
                                         let joinUser = new Joined({
-                                            name:req.body.name,
+                                            name:req.user.userName,
                                             code:req.body.code,
                                             user:code.user,
                                             Title:code.KahootTitle,
                                         })
                                         joinUser.save()
                                         .then(user=>{
-                                            console.log(user)
+                                           
                                             return res.status(201).json({
                                                 success:true,
                                                 msg:`${user.name} joined` ,
@@ -180,11 +183,18 @@ exports.saveKahootTitle=(req,res,next)=>{
                  }
 
 exports.displayplayersForEachKahoot= (req,res,next)=>{
+    if(req.user._id!=req.params.id){
+        return res.status(401).json({
+            success:false,
+            msg:"unauthorize"
+        })
+
+    }
     console.log(req.params.title)
+    console.log(req.user._id,req.params.id)
     Joined.find({
-        code:req.params.id,
+        user:req.params.id,
         Title:req.params.title,
-        user:req.user._id
     })
     .then(kahoot=>{
         console.log(kahoot)
@@ -254,8 +264,14 @@ exports.userQuestion = (req,res,next)=> {
 
 }
 exports.displayJoinedUserPage=(req,res,next)=>{
-    console.log(req.params.id)
-    Joined.findById(req.params.id)
+    // console.log(req.params.id)
+    // if(req.params.id!=req.user._id){
+    //     return res.status(400).json({
+    //         success:false,
+    //         msg:`unauthorize`,
+    //     })
+    // }
+    Joined.findOne({name:req.user.userName,_id:req.params.id})
     .then(user=>{
         return res.status(200).json({
             success:true,
@@ -263,6 +279,9 @@ exports.displayJoinedUserPage=(req,res,next)=>{
             user:user
         })
     }).catch(err=>{
+        return res.status(400).json({
+                    success:false,
+                    msg:`unauthorize`,
+                })
     })
 }
-// displayJoinedUserPage

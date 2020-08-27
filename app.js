@@ -1,6 +1,7 @@
 var createError = require('http-errors');
 var express = require('express');
 var indexRouter = require('./routes/index');
+var socket = require('./socket');
 var path = require('path');
 const cors = require('cors')
 const passport = require('passport')
