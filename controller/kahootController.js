@@ -183,6 +183,7 @@ exports.saveKahootTitle=(req,res,next)=>{
                  }
 
 exports.displayplayersForEachKahoot= (req,res,next)=>{
+//    console.log(req.user._id,req.params.id)
     if(req.user._id!=req.params.id){
         return res.status(401).json({
             success:false,
@@ -190,8 +191,8 @@ exports.displayplayersForEachKahoot= (req,res,next)=>{
         })
 
     }
-    console.log(req.params.title)
-    console.log(req.user._id,req.params.id)
+    // console.log(req.params.title)
+    // console.log(req.user._id,req.params.id)
     Joined.find({
         user:req.params.id,
         Title:req.params.title,

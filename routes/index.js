@@ -18,8 +18,18 @@ process.env.SECRET_KEY = 'secure'
 
 // const  {verifyUser} = require('../helper/Auth')
 
-router.get('/',(req,res,next)=>{
-    res.send('worked')
+router.post('/',(req,res,next)=>{
+    let io=req.io
+  io.on('connection', function (socket) {
+    res.json(socket.id)
+  console.log(`Userz connected ...${socket.io}`);
+  })
+
+  res.json('socket.id')
+
+
+
+
 })
 
 //register

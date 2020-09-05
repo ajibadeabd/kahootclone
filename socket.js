@@ -10,7 +10,7 @@ var io = require('socket.io')(server);
 // Socket IO
 server.listen(4000);
 
-io.on('connection', function (socket) {
+io.on('connection', function (socket,req) {
   console.log(`User connected ...${socket.id}`);
   socket.on('disconnect', function() {
     console.log(`User disconnected ${socket.id}`);
@@ -18,12 +18,17 @@ io.on('connection', function (socket) {
   socket.on('joined', function (data) {
     console.log(data);
     // io.emit('new-message', { message: data });
-    socket.broadcast.emit('display', { message: data });
+    socket.emit('joined', { message: data });
 
   });
+ 
 });
 
-
+// app.use((req,res,next)=>{
+//   req.io=io;
+//   next()
+//   console.log(('socket.id'))
+//   })
 
 // var express = require('express');
 // var router = express.Router();

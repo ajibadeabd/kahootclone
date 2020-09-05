@@ -2,16 +2,18 @@ var createError = require('http-errors');
 var express = require('express');
 var indexRouter = require('./routes/index');
 var socket = require('./socket');
+let app= express()
 var path = require('path');
 const cors = require('cors')
 const passport = require('passport')
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
 
 // var cookieParser = require('cookie-parser');
 // var bodyParser = require('body-parser');
 var logger = require('morgan');
 // const passport = require('passport')
 const mongoose = require('mongoose');
-let app= express()
 //map global promise - get rid of warning
 mongoose.promise=global.promise;
 mongoose.connect( 'mongodb://localhost/kahoot',
@@ -27,7 +29,10 @@ mongoose.connect( 'mongodb://localhost/kahoot',
 let port = process.env.PORT || 2000
 
 
-
+app.use((req,res,next)=>{
+  req.io=io
+  next()
+  })
 
 
 app.use(logger('dev'));
